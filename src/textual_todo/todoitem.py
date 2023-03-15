@@ -22,19 +22,6 @@ class TodoItem(Static):
         padding: 0 1;
     }
 
-    /* Change border colour according to due date status. */
-    TodoItem.todoitem--due-late {
-        border: heavy $error;
-    }
-
-    TodoItem.todoitem--due-today {
-        border: heavy $warning;
-    }
-
-    TodoItem.todoitem--due-in-time {
-        border: heavy $accent;
-    }
-
     /* Make sure the top row can be as tall as needed. */
     .todoitem--top-row {
         height: auto;
@@ -52,23 +39,6 @@ class TodoItem(Static):
     .todoitem--bot-row {
         height: 3;
         align-horizontal: right;
-    }
-
-    /* Restyle top row when collapsed and remove bottom row. */
-    .todoitem--top-row .todoitem--collapsed {
-        height: 3;
-    }
-
-    .todoitem--top-row .editabletext--label .todoitem--collapsed {
-        height: 3;
-    }
-
-    TodoItem.todoitem--collapsed .editabletext--label {
-        height: 3;
-    }
-
-    .todoitem--collapsed .todoitem--bot-row {
-        display: none;
     }
 
     /* Style some sub-widgets. */
@@ -100,6 +70,36 @@ class TodoItem(Static):
         border: tall $primary;
         padding: 0 2;
         height: 100%;
+    }
+
+    /* Restyle top row when collapsed and remove bottom row. */
+    .todoitem--top-row .todoitem--collapsed {
+        height: 3;
+    }
+
+    .todoitem--top-row .editabletext--label .todoitem--collapsed {
+        height: 3;
+    }
+
+    TodoItem.todoitem--collapsed .editabletext--label {
+        height: 3;
+    }
+
+    .todoitem--collapsed .todoitem--bot-row {
+        display: none;
+    }
+
+    /* Change border colour according to due date status. */
+    TodoItem.todoitem--due-late {
+        border: heavy $error;
+    }
+
+    TodoItem.todoitem--due-today {
+        border: heavy $warning;
+    }
+
+    TodoItem.todoitem--due-in-time {
+        border: heavy $accent;
     }
     """
 
@@ -192,3 +192,39 @@ class TodoItem(Static):
         event.stop()
         self._show_more.label = ">" if str(self._show_more.label) == "v" else "v"
         self.toggle_class("todoitem--collapsed")
+
+    def set_status_message(self, status: str, duration: float | None = None) -> None:
+        """Set the status for a determined period of time.
+
+        Args:
+            status: The new status message.
+            duration: How many seconds to keep the status message for.
+                Setting this to None will keep it there until it is changed again.
+        """
+        self._status.renderable = status
+        self._status.refresh()
+
+        if duration is not None:
+            self.set_timer(duration, self.reset_status)
+
+    def reset_status(self) -> None:
+        """Resets the status message to indicate time to deadline."""
+        self._status.renderable = ""
+        today = dt.date.today()
+        date = self.due_date
+
+        if date is None:
+            self.set_status_message("")
+            return
+
+        delta = (date - today).days
+        if delta > 1:
+            self.set_status_message(f"Due in {delta} days.")
+        elif delta == 1:
+            self.set_status_message("Due in 1 day.")
+        elif delta == 0:
+            self.set_status_message("Due today.")
+        elif delta == -1:
+            self.set_status_message("1 day late!")
+        else:
+            self.set_status_message(f"{abs(delta)} days late!")
