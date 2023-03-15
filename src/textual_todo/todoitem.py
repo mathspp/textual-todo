@@ -148,6 +148,9 @@ class TodoItem(Static):
     _bot_row: Horizontal
     """The bottom row of the widget."""
 
+    _cached_date: None | dt.date = None
+    """The date in cache."""
+
     def compose(self) -> ComposeResult:
         self._show_more = Button("v", classes="todoitem--show-more")
         self._done = Switch(classes="todoitem--done")
@@ -176,3 +179,10 @@ class TodoItem(Static):
         self._description.switch_to_editing_mode()
         self._date_picker.switch_to_editing_mode()
         self.query(Input).first().focus()
+
+    @property
+    def due_date(self) -> dt.date | None:
+        """Date the item is due by, or None if not set."""
+        if self._cached_date is None:
+            self._cached_date = self._date_picker.date
+        return self._cached_date
