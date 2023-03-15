@@ -12,6 +12,8 @@ class TODOApp(App[None]):
 
     BINDINGS = [
         ("n", "new_todo", "New"),
+        ("c", "collapse_all", "Collapse all"),
+        ("e", "expand_all", "Expand all"),
     ]
 
     _todo_container: Vertical
@@ -60,6 +62,14 @@ class TODOApp(App[None]):
         end = len(self._todo_container.children) - 1
         if self._todo_container.children[end] != item:
             self._todo_container.move_child(item, after=end)
+
+    def action_collapse_all(self) -> None:
+        for todo_item in self._todo_container.query(TodoItem):
+            todo_item.collapse_description()
+
+    def action_expand_all(self) -> None:
+        for todo_item in self._todo_container.query(TodoItem):
+            todo_item.expand_description()
 
 
 app = TODOApp()
