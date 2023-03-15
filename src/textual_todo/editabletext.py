@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from textual.app import App, ComposeResult
+from textual.message import Message
 from textual.widgets import Button, Input, Label, Static
 
 
@@ -14,23 +17,21 @@ class EditableText(Static):
 
     .editabletext--input {
         width: 1fr;
+        height: 3;
     }
 
     .editabletext--label {
         width: 1fr;
         height: 3;
-        padding-left: 2;
         border: round $primary;
     }
 
     .editabletext--edit {
-        box-sizing: border-box;
         min-width: 0;
         width: 4;
     }
 
     .editabletext--confirm {
-        box-sizing: border-box;
         min-width: 0;
         width: 4;
     }
@@ -48,6 +49,26 @@ class EditableText(Static):
     """The field that allows editing text."""
     _label: Label
     """The label that displays the text."""
+
+    class Display(Message):  # (1)!
+        """The user switched to display mode."""
+
+        editable_text: EditableText
+        """The EditableText instance that changed into display mode."""
+
+        def __init__(self, editable_text: EditableText) -> None:
+            self.editable_text = editable_text
+            super().__init__()
+
+    class Edit(Message):  # (2)!
+        """The user switched to edit mode."""
+
+        editable_text: EditableText
+        """The EditableText instance that changed into edit mode."""
+
+        def __init__(self, editable_text: EditableText) -> None:
+            self.editable_text = editable_text
+            super().__init__()
 
     def compose(self) -> ComposeResult:
         self._input = Input(
@@ -69,7 +90,8 @@ class EditableText(Static):
         """Is the text being edited?"""
         return not self._input.has_class("ethidden")
 
-    def on_button_pressed(self) -> None:
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        event.stop()  # (3)!
         if self.is_editing:
             self.switch_to_display_mode()
         else:
@@ -89,6 +111,8 @@ class EditableText(Static):
         self._confirm_button.disabled = False
         self._confirm_button.remove_class("ethidden")
 
+        self.post_message(self.Edit(self))  # (4)!
+
     def switch_to_display_mode(self) -> None:
         if not self.is_editing:
             return
@@ -102,6 +126,8 @@ class EditableText(Static):
         self._confirm_button.add_class("ethidden")
         self._edit_button.disabled = False
         self._edit_button.remove_class("ethidden")
+
+        self.post_message(self.Display(self))  # (5)!
 
 
 class EditableTextApp(App[None]):
