@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import datetime as dt
+
 from textual.app import ComposeResult
 from textual.containers import Horizontal
+from textual.message import Message
 from textual.widgets import Button, Input, Label, Static, Switch
 
 from .datepicker import DatePicker
@@ -99,6 +102,34 @@ class TodoItem(Static):
         height: 100%;
     }
     """
+
+    class DueDateChanged(Message):
+        """Posted when the due date changes."""
+
+        todo_item: TodoItem
+
+        def __init__(self, todo_item: TodoItem, date: dt.date) -> None:
+            self.todo_item = todo_item
+            self.date = date
+            super().__init__()
+
+    class DueDateCleared(Message):
+        """Posted when the due date is reset."""
+
+        todo_item: TodoItem
+
+        def __init__(self, todo_item: TodoItem) -> None:
+            self.todo_item = todo_item
+            super().__init__()
+
+    class Done(Message):
+        """Posted when the TODO item is checked off."""
+
+        todo_item: TodoItem
+
+        def __init__(self, todo_item: TodoItem) -> None:
+            self.todo_item = todo_item
+            super().__init__()
 
     _show_more: Button
     """Sub widget to toggle the extra details about the TODO item."""
