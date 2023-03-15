@@ -29,6 +29,14 @@ class TODOApp(App[None]):
         new_todo.scroll_visible()
         new_todo.set_status_message("Add description and due date.")
 
+    async def on_todo_item_done(self, event: TodoItem.Done) -> None:
+        """If an item is done, get rid of it.
+
+        In a more conventional TODO app, completed items would likely be archived
+        instead of completely obliterated.
+        """
+        await event.todo_item.remove()
+
 
 app = TODOApp()
 
