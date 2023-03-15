@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "textual-todo"
+version = "0.1.0"
+description = "A simple TODO app built with Textual."
+authors = ["Rodrigo Girão Serrao <rodrigo@mathspp.com>"]
+license = "MIT license"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.7"
+textual = "^0.15.1"
+
+[tool.poetry.group.dev.dependencies]
+textual-dev = "^0.0.2"
+mypy = "^1.1.1"
+black = "^23.1.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
