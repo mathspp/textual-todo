@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "textual-todo"
+name = "textual_todo"
 version = "0.1.0"
 description = "A simple TODO app built with Textual."
 authors = ["Rodrigo Girão Serrao <rodrigo@mathspp.com>"]
