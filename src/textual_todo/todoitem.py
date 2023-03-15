@@ -268,3 +268,8 @@ class TodoItem(Static):
         )
 
         self.post_message(self.DueDateCleared(self))
+
+    def on_switch_changed(self, event: Switch.Changed) -> None:
+        """Emit event saying the TODO item was completed."""
+        event.stop()
+        self.post_message(self.Done(self))
