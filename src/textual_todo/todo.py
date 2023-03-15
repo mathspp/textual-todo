@@ -37,6 +37,30 @@ class TODOApp(App[None]):
         """
         await event.todo_item.remove()
 
+    def on_todo_item_due_date_changed(self, event: TodoItem.DueDateChanged) -> None:
+        self._sort_todo_item(event.todo_item)
+
+    def on_todo_item_due_date_cleared(self, event: TodoItem.DueDateCleared) -> None:
+        self._sort_todo_item(event.todo_item)
+
+    def _sort_todo_item(self, item: TodoItem) -> None:
+        """Sort the given TODO item in order, by date."""
+
+        if len(self._todo_container.children) == 1:
+            return
+
+        date = item.due_date
+        for idx, todo in enumerate(self._todo_container.query(TodoItem)):
+            if todo is item:
+                continue
+            if todo.due_date is None or (date is not None and todo.due_date > date):
+                self._todo_container.move_child(item, before=idx)
+                return
+
+        end = len(self._todo_container.children) - 1
+        if self._todo_container.children[end] != item:
+            self._todo_container.move_child(item, after=end)
+
 
 app = TODOApp()
 
