@@ -186,3 +186,9 @@ class TodoItem(Static):
         if self._cached_date is None:
             self._cached_date = self._date_picker.date
         return self._cached_date
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        """Toggle the collapsed state."""
+        event.stop()
+        self._show_more.label = ">" if str(self._show_more.label) == "v" else "v"
+        self.toggle_class("todoitem--collapsed")
