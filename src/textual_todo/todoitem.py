@@ -228,3 +228,26 @@ class TodoItem(Static):
             self.set_status_message("1 day late!")
         else:
             self.set_status_message(f"{abs(delta)} days late!")
+
+    def on_date_picker_selected(self, event: DatePicker.Selected) -> None:  # (5)!
+        """Colour the TODO item according to its deadline."""
+        event.stop()
+        date = event.date
+        if date == self._cached_date:
+            return
+
+        self._cached_date = date
+        self.set_status_message("Date updated.", 1)
+
+        today = dt.date.today()
+        self.remove_class(
+            "todoitem--due-late", "todoitem--due-today", "todoitem--due-in-time"
+        )
+        if date < today:
+            self.add_class("todoitem--due-late")
+        elif date == today:
+            self.add_class("todoitem--due-today")
+        else:
+            self.add_class("todoitem--due-in-time")
+
+        self.post_message(self.DueDateChanged(self, date))
