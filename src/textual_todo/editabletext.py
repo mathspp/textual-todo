@@ -65,11 +65,11 @@ class EditableText(Static):
         yield self._confirm_button
 
     @property
-    def is_editing(self) -> bool:  # (1)!
+    def is_editing(self) -> bool:
         """Is the text being edited?"""
         return not self._input.has_class("ethidden")
 
-    def on_button_pressed(self) -> None:  # (2)!
+    def on_button_pressed(self) -> None:
         if self.is_editing:
             self.switch_to_display_mode()
         else:
