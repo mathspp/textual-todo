@@ -251,3 +251,20 @@ class TodoItem(Static):
             self.add_class("todoitem--due-in-time")
 
         self.post_message(self.DueDateChanged(self, date))
+
+    def on_date_picker_cleared(self, event: DatePicker.DateCleared) -> None:
+        """Clear all styling from a TODO item with no due date."""
+
+        event.stop()
+        if self._cached_date is None:
+            return
+
+        self._cached_date = None
+        self.set_status_message("Date cleared.", 1)
+        self.remove_class(
+            "todoitem--due-late",
+            "todoitem--due-today",
+            "todoitem--due-in-time",
+        )
+
+        self.post_message(self.DueDateCleared(self))
