@@ -190,8 +190,25 @@ class TodoItem(Static):
     def on_button_pressed(self, event: Button.Pressed) -> None:
         """Toggle the collapsed state."""
         event.stop()
-        self._show_more.label = ">" if str(self._show_more.label) == "v" else "v"
-        self.toggle_class("todoitem--collapsed")
+        if self.is_collapsed:
+            self.expand_description()
+        else:
+            self.collapse_description()
+
+    def collapse_description(self) -> None:
+        """Collapse this item if not yet collapsed."""
+        self.add_class("todoitem--collapsed")
+        self._show_more.label = ">"
+
+    def expand_description(self) -> None:
+        """Expand this item if not yet expanded."""
+        self.remove_class("todoitem--collapsed")
+        self._show_more.label = "v"
+
+    @property
+    def is_collapsed(self) -> bool:
+        """Is the item collapsed?"""
+        return self.has_class("todoitem--collapsed")
 
     def set_status_message(self, status: str, duration: float | None = None) -> None:
         """Set the status for a determined period of time.
