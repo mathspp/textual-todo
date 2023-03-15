@@ -9,6 +9,12 @@ from .editabletext import EditableText
 
 
 class DatePicker(EditableText):
+    DEFAULT_CSS = """
+    DatePicker {
+        width: 21;
+    }
+    """
+
     class DateCleared(Message):
         """Posted when the date selected is cleared."""
 
