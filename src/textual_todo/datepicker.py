@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import datetime as dt
 
+from textual.app import ComposeResult
 from textual.message import Message
 
 from .editabletext import EditableText
 
 
 class DatePicker(EditableText):
-    class DateCleared(Message):  # (1)!
+    class DateCleared(Message):
         """Posted when the date selected is cleared."""
 
         date_picker: DatePicker
@@ -18,7 +19,7 @@ class DatePicker(EditableText):
             super().__init__()
             self.date_picker = date_picker
 
-    class Selected(Message):  # (2)!
+    class Selected(Message):
         """Posted when a valid date is selected."""
 
         date_picker: DatePicker
@@ -31,7 +32,19 @@ class DatePicker(EditableText):
             self.date_picker = date_picker
             self.date = date
 
-    def on_editable_text_display(self, event: EditableText.Display) -> None:  # (3)!
+    def compose(self) -> ComposeResult:
+        super_compose = list(super().compose())
+        self._input.placeholder = "dd-mm-yy"
+        yield from super_compose
+
+    def switch_to_display_mode(self) -> None:
+        """Switch to display mode only if the date is empty or valid."""
+        if self._input.value and self.date is None:
+            self.app.bell()
+            return
+        return super().switch_to_display_mode()
+
+    def on_editable_text_display(self, event: EditableText.Display) -> None:
         event.stop()
         date = self.date
         if date is None:
@@ -39,7 +52,7 @@ class DatePicker(EditableText):
         else:
             self.post_message(self.Selected(self, date))
 
-    def on_editable_text_edit(self, event: EditableText.Edit) -> None:  # (4)!
+    def on_editable_text_edit(self, event: EditableText.Edit) -> None:
         event.stop()
 
     @property
