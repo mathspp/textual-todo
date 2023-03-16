@@ -91,6 +91,8 @@ class TODOApp(App[None]):
         for item in data:
             new_todo = TodoItem(item["description"], item["date"])
             await self._todo_container.mount(new_todo)
+            new_todo.update_style()
+            self._sort_todo_item(new_todo)
 
         self.action_collapse_all()
 
