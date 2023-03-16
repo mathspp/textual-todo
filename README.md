@@ -2,7 +2,10 @@
 
 ![](_static_app_demo.png)
 
-[Read the tutorial here](https://mathspp.com/blog/textual-tutorial-build-a-todo-app-in-python)
+
+## Tutorial
+
+[Read the tutorial here!](https://mathspp.com/blog/textual-tutorial-build-a-todo-app-in-python)
 
 
 ## GIF demo
