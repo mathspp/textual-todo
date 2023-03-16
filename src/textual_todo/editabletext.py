@@ -50,6 +50,9 @@ class EditableText(Static):
     _label: Label
     """The label that displays the text."""
 
+    _initial_value: str = ""
+    """The initial value to initialise the instance with."""
+
     class Display(Message):  # (1)!
         """The user switched to display mode."""
 
@@ -70,11 +73,17 @@ class EditableText(Static):
             self.editable_text = editable_text
             super().__init__()
 
+    def __init__(self, value: str = "", *args, **kwargs) -> None:
+        self._initial_value = value
+        super().__init__(*args, **kwargs)
+
     def compose(self) -> ComposeResult:
         self._input = Input(
-            placeholder="Type something...", classes="editabletext--input ethidden"
+            value=self._initial_value,
+            placeholder="Type something...",
+            classes="editabletext--input ethidden",
         )
-        self._label = Label("", classes="editabletext--label")
+        self._label = Label(self._initial_value, classes="editabletext--label")
         self._edit_button = Button("📝", classes="editabletext--edit")
         self._confirm_button = Button(
             "✅", classes="editabletext--confirm ethidden", disabled=True
