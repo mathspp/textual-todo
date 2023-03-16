@@ -97,6 +97,7 @@ class TODOApp(App[None]):
             new_todo = TodoItem(item["description"], item["date"])
             await self._todo_container.mount(new_todo)
             new_todo.update_style()
+            new_todo.reset_status()
             self._sort_todo_item(new_todo)
 
         self.action_collapse_all()
