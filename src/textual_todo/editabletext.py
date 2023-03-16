@@ -53,7 +53,7 @@ class EditableText(Static):
     _initial_value: str = ""
     """The initial value to initialise the instance with."""
 
-    class Display(Message):  # (1)!
+    class Display(Message):
         """The user switched to display mode."""
 
         editable_text: EditableText
@@ -63,7 +63,7 @@ class EditableText(Static):
             self.editable_text = editable_text
             super().__init__()
 
-    class Edit(Message):  # (2)!
+    class Edit(Message):
         """The user switched to edit mode."""
 
         editable_text: EditableText
@@ -100,7 +100,7 @@ class EditableText(Static):
         return not self._input.has_class("ethidden")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
-        event.stop()  # (3)!
+        event.stop()
         if self.is_editing:
             self.switch_to_display_mode()
         else:
@@ -120,7 +120,7 @@ class EditableText(Static):
         self._confirm_button.disabled = False
         self._confirm_button.remove_class("ethidden")
 
-        self.post_message(self.Edit(self))  # (4)!
+        self.post_message(self.Edit(self))
 
     def switch_to_display_mode(self) -> None:
         if not self.is_editing:
@@ -136,7 +136,7 @@ class EditableText(Static):
         self._edit_button.disabled = False
         self._edit_button.remove_class("ethidden")
 
-        self.post_message(self.Display(self))  # (5)!
+        self.post_message(self.Display(self))
 
 
 class EditableTextApp(App[None]):
