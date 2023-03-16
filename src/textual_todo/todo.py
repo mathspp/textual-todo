@@ -1,10 +1,15 @@
 from __future__ import annotations
 
+import json
+
 from textual.app import App, ComposeResult
 from textual.containers import Vertical
 from textual.widgets import Footer
 
 from .todoitem import TodoItem
+
+
+DATA_FILE = "items.json"
 
 
 class TODOApp(App[None]):
@@ -70,6 +75,24 @@ class TODOApp(App[None]):
     def action_expand_all(self) -> None:
         for todo_item in self._todo_container.query(TodoItem):
             todo_item.expand_description()
+
+    async def on_mount(self) -> None:
+        await self._read_from_file(DATA_FILE)
+
+    async def _read_from_file(self, path: str) -> None:
+        """Import TODO items from a JSON file."""
+        data: list[dict[str, str]]
+        try:
+            with open(path, "r") as f:
+                data = json.load(f)
+        except FileNotFoundError:
+            data = []
+
+        for item in data:
+            new_todo = TodoItem(item["description"], item["date"])
+            await self._todo_container.mount(new_todo)
+
+        self.action_collapse_all()
 
 
 app = TODOApp()
