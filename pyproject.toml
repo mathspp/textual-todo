@@ -15,6 +15,9 @@ textual-dev = "^0.0.2"
 mypy = "^1.1.1"
 black = "^23.1.0"
 
+[tool.poetry.scripts]
+todo = "textual_todo.todo:app.run"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
