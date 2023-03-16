@@ -6,6 +6,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Vertical
 from textual.widgets import Footer
 
+from .editabletext import EditableText
 from .todoitem import TodoItem
 
 
@@ -35,6 +36,7 @@ class TODOApp(App[None]):
         await self._todo_container.mount(new_todo)
         new_todo.scroll_visible()
         new_todo.set_status_message("Add description and due date.")
+        self._save_to_file()
 
     async def on_todo_item_done(self, event: TodoItem.Done) -> None:
         """If an item is done, get rid of it.
@@ -43,12 +45,15 @@ class TODOApp(App[None]):
         instead of completely obliterated.
         """
         await event.todo_item.remove()
+        self._save_to_file()
 
     def on_todo_item_due_date_changed(self, event: TodoItem.DueDateChanged) -> None:
         self._sort_todo_item(event.todo_item)
+        self._save_to_file()
 
     def on_todo_item_due_date_cleared(self, event: TodoItem.DueDateCleared) -> None:
         self._sort_todo_item(event.todo_item)
+        self._save_to_file()
 
     def _sort_todo_item(self, item: TodoItem) -> None:
         """Sort the given TODO item in order, by date."""
@@ -95,6 +100,21 @@ class TODOApp(App[None]):
             self._sort_todo_item(new_todo)
 
         self.action_collapse_all()
+
+    def _save_to_file(self) -> None:
+        data = [
+            {
+                "description": str(todo._description._label.renderable),
+                "date": str(todo._date_picker._label.renderable),
+            }
+            for todo in self._todo_container.query(TodoItem)
+        ]
+
+        with open(DATA_FILE, "w") as f:
+            json.dump(data, f)
+
+    def on_editable_text_display(self, event: EditableText.Display) -> None:
+        self._save_to_file()
 
 
 app = TODOApp()
