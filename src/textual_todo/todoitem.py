@@ -217,11 +217,13 @@ class TodoItem(Static):
         """Collapse this item if not yet collapsed."""
         self.add_class("todoitem--collapsed")
         self._show_more.label = ">"
+        self.refresh(layout=True)
 
     def expand_description(self) -> None:
         """Expand this item if not yet expanded."""
         self.remove_class("todoitem--collapsed")
         self._show_more.label = "v"
+        self.refresh(layout=True)
 
     @property
     def is_collapsed(self) -> bool:
