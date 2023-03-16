@@ -151,10 +151,22 @@ class TodoItem(Static):
     _cached_date: None | dt.date = None
     """The date in cache."""
 
+    _initial_description: str = ""
+    """The initial description to initialise the instance with."""
+    _initial_date: str = ""
+    """Date string to initialise the instance with."""
+
+    def __init__(self, description: str = "", date: str = "", *args, **kwargs) -> None:
+        self._initial_description = description
+        self._initial_date = date
+        super().__init__(*args, **kwargs)
+
     def compose(self) -> ComposeResult:
         self._show_more = Button("v", classes="todoitem--show-more")
         self._done = Switch(classes="todoitem--done")
-        self._description = EditableText(classes="todoitem--description")
+        self._description = EditableText(
+            self._initial_description, classes="todoitem--description"
+        )
         self._top_row = Horizontal(
             self._show_more,
             self._done,
@@ -163,7 +175,9 @@ class TodoItem(Static):
         )
 
         self._due_date_label = Label("Due date:", classes="todoitem--duedate")
-        self._date_picker = DatePicker(classes="todoitem--datepicker")
+        self._date_picker = DatePicker(
+            self._initial_date, classes="todoitem--datepicker"
+        )
         self._status = Label("", classes="todoitem--status")
         self._bot_row = Horizontal(
             self._status,
@@ -176,9 +190,13 @@ class TodoItem(Static):
         yield self._bot_row
 
     def on_mount(self) -> None:
-        self._description.switch_to_editing_mode()
-        self._date_picker.switch_to_editing_mode()
-        self.query(Input).first().focus()
+        if not self._initial_description:
+            self._description.switch_to_editing_mode()
+            self.query(Input).first().focus()
+        if self.due_date is None:
+            self._date_picker.switch_to_editing_mode()
+            if self._initial_description:
+                self.query(Input).last().focus()
 
     @property
     def due_date(self) -> dt.date | None:
